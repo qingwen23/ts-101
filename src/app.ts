@@ -102,13 +102,14 @@ const reducer = (action: ActionType) => {
     case 'RANDOM_PICK':
       let qualifiedRes: RestaurantType[];
       if (action.payload.priceRange) {
-        qualifiedRes = restaurants.filter(
-          (r) => r.priceRange.length <= action.payload.priceRange.length,
-        );
+        let budget: number = action.payload.priceRange.length;
+        qualifiedRes = restaurants.filter((r) => r.priceRange.length <= budget);
       } else if (action.payload.cuisine) {
         qualifiedRes = restaurants.filter(
           (r) => r.cuisine === action.payload.cuisine,
         );
+      } else {
+        qualifiedRes = restaurants;
       }
 
       return qualifiedRes[Math.floor(Math.random() * qualifiedRes.length)];
@@ -192,6 +193,14 @@ console.log(
     payload: {
       cuisine: 'Mexican',
     },
+  }),
+);
+
+console.log(
+  'Random Pick:',
+  reducer({
+    type: 'RANDOM_PICK',
+    payload: {},
   }),
 );
 
