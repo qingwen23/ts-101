@@ -168,5 +168,3 @@ console.log(
 // Review comments
 // Compliments/complaint badges
 // Display all restaurants above a certain star rating
-
-//
