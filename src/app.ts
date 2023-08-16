@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 // establish the type
 // type RestaurantType = Record<string, string>;
@@ -99,7 +100,19 @@ const reducer = (action: ActionType) => {
       );
       return tempRestaurants;
     case 'RANDOM_PICK':
-      return restaurants;
+      let qualifiedRes: RestaurantType[];
+      if (action.payload.priceRange) {
+        qualifiedRes = restaurants.filter(
+          (r) => r.priceRange.length <= action.payload.priceRange.length,
+        );
+      } else if (action.payload.cuisine) {
+        qualifiedRes = restaurants.filter(
+          (r) => r.cuisine === action.payload.cuisine,
+        );
+      }
+
+      return qualifiedRes[Math.floor(Math.random() * qualifiedRes.length)];
+      break;
     default:
       throw new Error('Invalid action type');
   }
@@ -158,6 +171,26 @@ console.log(
     type: 'DISPLAY_RESTAURANT',
     payload: {
       cuisine: 'Fast Food',
+    },
+  }),
+);
+
+console.log(
+  'Random Pick (Price Range):',
+  reducer({
+    type: 'RANDOM_PICK',
+    payload: {
+      priceRange: '$$',
+    },
+  }),
+);
+
+console.log(
+  'Random Pick (Cuisine):',
+  reducer({
+    type: 'RANDOM_PICK',
+    payload: {
+      cuisine: 'Mexican',
     },
   }),
 );
