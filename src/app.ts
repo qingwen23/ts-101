@@ -77,6 +77,18 @@ let restaurants: RestaurantType[] = [
     cuisine: 'Western',
     priceRange: '$$$',
   },
+  {
+    name: 'Chipotle',
+    address: 'Jakel Mall',
+    cuisine: 'Mexican',
+    priceRange: '$$',
+  },
+  {
+    name: 'Qing Bistrol',
+    address: 'Dang Wangi',
+    cuisine: 'Chinese',
+    priceRange: '$$$',
+  },
 ];
 
 type RestaurantWithReviewType = {
@@ -85,29 +97,17 @@ type RestaurantWithReviewType = {
   badges: string;
 } & RestaurantType;
 
-// const restaurantsWithReview: RestaurantWithReviewType[] = [
-//   {
-//     name: 'McD',
-//     address: 'Kuala Lumpur',
-//     cuisine: 'Fast Food',
-//     priceRange: '$$',
-//     starRating: 4,
-//     reviewComments: 'Taste Good',
-//     badges: 'Compliment',
-//   },
-//   {
-//     name: 'KFC',
-//     address: 'Selangor',
-//     cuisine: 'Fast Food',
-//     priceRange: '$$',
-//     starRating: 3,
-//     reviewComments: 'Taste Good',
-//     badges: 'Compliment',
-//   },
-// ];
+type RestaurantWithMenus = {
+  menu: Menu[];
+};
+
+type Menu = {
+  name: string;
+  category: string;
+  recommended: boolean;
+};
 
 let tempRestaurants: RestaurantType[] = [];
-// let tempRestaurantsWithReview: RestaurantType[] = [];
 
 // reducer
 const reducer = (action: ActionType) => {
@@ -186,7 +186,8 @@ const reducer = (action: ActionType) => {
               cuisine: r.cuisine,
               priceRange: r.priceRange,
               starRating: action.payload?.starRating ?? r.starRating,
-              reviewComments: action.payload?.reviewComments ?? r.reviewComments,
+              reviewComments:
+                action.payload?.reviewComments ?? r.reviewComments,
               badges: action.payload?.badges ?? r.badges,
             };
           }
@@ -200,45 +201,42 @@ const reducer = (action: ActionType) => {
   }
 };
 
-reducer({
-  type: 'ADD_RESTAURANT',
-  payload: {
-    name: 'Tacos Tuesday 1',
-    address: '123 Food Street 1',
-    cuisine: 'Mexican',
-    priceRange: '$',
-  },
-});
-
-reducer({
-  type: 'ADD_RESTAURANT',
-  payload: {
-    name: 'Tacos Tuesday 2',
-    address: '123 Food Street 2',
-    cuisine: 'Mexican',
-    priceRange: '$',
-  },
-});
-
-reducer({
-  type: 'DELETE_RESTAURANT',
-  payload: {
-    name: 'Tacos Tuesday 1',
-  },
-});
-
-// console.log('print: ', restaurants);
-
-reducer({
-  type: 'UPDATE_RESTAURANT',
-  payload: {
-    name: 'McD KL',
-    address: 'Kuala Lumpur',
-  },
-});
+console.log(
+  '\nadd restaurant:',
+  reducer({
+    type: 'ADD_RESTAURANT',
+    payload: {
+      name: 'Tacos Tuesday 1',
+      address: '123 Food Street 1',
+      cuisine: 'Mexican',
+      priceRange: '$',
+    },
+  }),
+);
 
 console.log(
-  'search result:',
+  '\ndelete restaurant:',
+  reducer({
+    type: 'DELETE_RESTAURANT',
+    payload: {
+      name: 'Qing Bistrol',
+    },
+  }),
+);
+
+console.log(
+  '\nupdate restaurant:',
+  reducer({
+    type: 'UPDATE_RESTAURANT',
+    payload: {
+      name: 'McD KL',
+      address: 'Kuala Lumpur',
+    },
+  }),
+);
+
+console.log(
+  '\nsearch result:',
   reducer({
     type: 'SEARCH_RESTAURANT',
     payload: {
@@ -248,7 +246,7 @@ console.log(
 );
 
 console.log(
-  'display:',
+  '\ndisplay list of restaurant:',
   reducer({
     type: 'DISPLAY_RESTAURANT',
     payload: {
@@ -258,7 +256,7 @@ console.log(
 );
 
 console.log(
-  'Random Pick (Price Range):',
+  '\nRandom Pick (Price Range):',
   reducer({
     type: 'RANDOM_PICK',
     payload: {
@@ -268,57 +266,51 @@ console.log(
 );
 
 console.log(
-  'Random Pick (Cuisine):',
+  '\nRandom Pick (Cuisine):',
   reducer({
     type: 'RANDOM_PICK',
     payload: {
-      cuisine: 'Mexican',
+      cuisine: 'Fast Food',
     },
   }),
 );
 
 console.log(
-  'Random Pick:',
+  '\nRandom Pick:',
   reducer({
     type: 'RANDOM_PICK',
     payload: {},
   }),
 );
 
-// Review
-// Support restaurant reviews.
-// Star rating
-// Review comments
-// Compliments/complaint badges
-// Display all restaurants above a certain star rating
 console.log(
-  'after adding review',
+  '\nafter adding review',
   reducer({
     type: 'ADD_REVIEW',
     payload: {
       name: 'The Brew House',
       starRating: 2,
-      reviewComments: 'Taste OK [Updated]',
+      reviewComments: 'Taste OK',
       badges: 'Complaint',
     },
   }),
 );
 
 console.log(
-  'after adding review',
+  '\nafter adding review',
   reducer({
     type: 'ADD_REVIEW',
     payload: {
-      name: 'Tacos Tuesday 2',
+      name: 'McD KL',
       starRating: 4,
-      reviewComments: 'Taste OK [Updated]',
+      reviewComments: 'Delicious',
       badges: 'Complaint',
     },
   }),
 );
 
 console.log(
-  'display restaurants with review:',
+  '\ndisplay restaurants with review:',
   reducer({
     type: 'DISPLAY_REVIEW',
     payload: {
