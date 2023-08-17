@@ -8,6 +8,9 @@ type RestaurantType = {
   address: string;
   cuisine: string;
   priceRange: string;
+  starRating?: number;
+  reviewComments?: string;
+  badges?: string;
 };
 
 type ActionType =
@@ -37,7 +40,12 @@ type ActionType =
     }
   | {
       type: 'ADD_REVIEW';
-      payload: RestaurantWithReviewType;
+      payload: {
+        name: string;
+        starRating: number;
+        reviewComments: string;
+        badges: string;
+      };
     };
 
 type SearchResultType =
@@ -77,29 +85,29 @@ type RestaurantWithReviewType = {
   badges: string;
 } & RestaurantType;
 
-const restaurantsWithReview: RestaurantWithReviewType[] = [
-  {
-    name: 'McD',
-    address: 'Kuala Lumpur',
-    cuisine: 'Fast Food',
-    priceRange: '$$',
-    starRating: 4,
-    reviewComments: 'Taste Good',
-    badges: 'Compliment',
-  },
-  {
-    name: 'KFC',
-    address: 'Selangor',
-    cuisine: 'Fast Food',
-    priceRange: '$$',
-    starRating: 3,
-    reviewComments: 'Taste Good',
-    badges: 'Compliment',
-  },
-];
+// const restaurantsWithReview: RestaurantWithReviewType[] = [
+//   {
+//     name: 'McD',
+//     address: 'Kuala Lumpur',
+//     cuisine: 'Fast Food',
+//     priceRange: '$$',
+//     starRating: 4,
+//     reviewComments: 'Taste Good',
+//     badges: 'Compliment',
+//   },
+//   {
+//     name: 'KFC',
+//     address: 'Selangor',
+//     cuisine: 'Fast Food',
+//     priceRange: '$$',
+//     starRating: 3,
+//     reviewComments: 'Taste Good',
+//     badges: 'Compliment',
+//   },
+// ];
 
 let tempRestaurants: RestaurantType[] = [];
-let tempRestaurantsWithReview: RestaurantWithReviewType[] = [];
+// let tempRestaurantsWithReview: RestaurantType[] = [];
 
 // reducer
 const reducer = (action: ActionType) => {
@@ -140,7 +148,7 @@ const reducer = (action: ActionType) => {
       return tempRestaurants;
     case 'RANDOM_PICK':
       if (action.payload.priceRange) {
-        let budget: number = action.payload.priceRange.length;
+        const budget: number = action.payload.priceRange.length;
         tempRestaurants = restaurants.filter(
           (r) => r.priceRange.length <= budget,
         );
@@ -156,17 +164,37 @@ const reducer = (action: ActionType) => {
         : tempRestaurants;
 
     case 'DISPLAY_REVIEW':
-      restaurantsWithReview.forEach((r) => {
-        if (r.starRating >= action.payload.starRatingNumber) {
-          tempRestaurantsWithReview = [...tempRestaurantsWithReview, r];
+      tempRestaurants = [];
+      restaurants.forEach((r) => {
+        if (
+          typeof r.starRating === 'number' &&
+          r.starRating >= action.payload.starRatingNumber
+        ) {
+          tempRestaurants.push(r);
         }
       });
-      return tempRestaurantsWithReview.length > 0
-        ? tempRestaurantsWithReview
-        : [];
+      return tempRestaurants;
     case 'ADD_REVIEW':
-      restaurantsWithReview.push(action.payload);
-      return restaurantsWithReview;
+      if (action.payload.name) {
+        // add review comments etc.
+        // update the restaurant data
+        restaurants = restaurants.map((r) => {
+          if (r.name === action.payload.name) {
+            return {
+              name: r.name,
+              address: r.address,
+              cuisine: r.cuisine,
+              priceRange: r.priceRange,
+              starRating: action.payload?.starRating ?? r.starRating,
+              reviewComments: action.payload?.reviewComments ?? r.reviewComments,
+              badges: action.payload?.badges ?? r.badges,
+            };
+          }
+          return r;
+        });
+        return restaurants;
+      }
+      return restaurants;
     default:
       throw new Error('Invalid action type');
   }
@@ -268,12 +296,22 @@ console.log(
   reducer({
     type: 'ADD_REVIEW',
     payload: {
-      name: 'Seoul Garden',
-      address: 'Mall',
-      cuisine: 'Steamboat',
-      priceRange: '$$$',
+      name: 'The Brew House',
       starRating: 2,
-      reviewComments: 'Taste OK',
+      reviewComments: 'Taste OK [Updated]',
+      badges: 'Complaint',
+    },
+  }),
+);
+
+console.log(
+  'after adding review',
+  reducer({
+    type: 'ADD_REVIEW',
+    payload: {
+      name: 'Tacos Tuesday 2',
+      starRating: 4,
+      reviewComments: 'Taste OK [Updated]',
       badges: 'Complaint',
     },
   }),
@@ -284,7 +322,7 @@ console.log(
   reducer({
     type: 'DISPLAY_REVIEW',
     payload: {
-      starRatingNumber: 3,
+      starRatingNumber: 4,
     },
   }),
 );
