@@ -71,6 +71,12 @@ let restaurants: RestaurantType[] = [
   },
 ];
 
+type RestaurantWithReviewType = {
+  starRating: number;
+  reviewComments: string;
+  badges: string;
+} & RestaurantType;
+
 const restaurantsWithReview: RestaurantWithReviewType[] = [
   {
     name: 'McD',
@@ -91,12 +97,6 @@ const restaurantsWithReview: RestaurantWithReviewType[] = [
     badges: 'Compliment',
   },
 ];
-
-type RestaurantWithReviewType = {
-  starRating: number;
-  reviewComments: string;
-  badges: string;
-} & RestaurantType;
 
 let tempRestaurants: RestaurantType[] = [];
 let tempRestaurantsWithReview: RestaurantWithReviewType[] = [];
@@ -139,20 +139,21 @@ const reducer = (action: ActionType) => {
       );
       return tempRestaurants;
     case 'RANDOM_PICK':
-      let qualifiedRes: RestaurantType[] = [];
       if (action.payload.priceRange) {
         let budget: number = action.payload.priceRange.length;
-        qualifiedRes = restaurants.filter((r) => r.priceRange.length <= budget);
+        tempRestaurants = restaurants.filter(
+          (r) => r.priceRange.length <= budget,
+        );
       } else if (action.payload.cuisine) {
-        qualifiedRes = restaurants.filter(
+        tempRestaurants = restaurants.filter(
           (r) => r.cuisine === action.payload.cuisine,
         );
       } else {
-        qualifiedRes = restaurants;
+        tempRestaurants = restaurants;
       }
-      return qualifiedRes.length > 0
-        ? qualifiedRes[Math.floor(Math.random() * qualifiedRes.length)]
-        : qualifiedRes;
+      return tempRestaurants.length > 0
+        ? tempRestaurants[Math.floor(Math.random() * tempRestaurants.length)]
+        : tempRestaurants;
 
     case 'DISPLAY_REVIEW':
       restaurantsWithReview.forEach((r) => {
