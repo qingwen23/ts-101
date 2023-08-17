@@ -28,6 +28,16 @@ type ActionType =
         | 'DISPLAY_RESTAURANT'
         | 'RANDOM_PICK';
       payload: Partial<RestaurantType>;
+    }
+  | {
+      type: 'DISPLAY_REVIEW';
+      payload: {
+        starRatingNumber: number;
+      };
+    }
+  | {
+      type: 'ADD_REVIEW';
+      payload: RestaurantWithReviewType;
     };
 
 type SearchResultType =
@@ -60,6 +70,36 @@ let restaurants: RestaurantType[] = [
     priceRange: '$$$',
   },
 ];
+
+const restaurantsWithReview: RestaurantWithReviewType[] = [
+  {
+    name: 'McD',
+    address: 'Kuala Lumpur',
+    cuisine: 'Fast Food',
+    priceRange: '$$',
+    starRating: 4,
+    reviewComments: 'Taste Good',
+    badges: 'Compliment',
+  },
+  {
+    name: 'KFC',
+    address: 'Selangor',
+    cuisine: 'Fast Food',
+    priceRange: '$$',
+    starRating: 3,
+    reviewComments: 'Taste Good',
+    badges: 'Compliment',
+  },
+];
+
+type RestaurantWithReviewType = {
+  starRating: number;
+  reviewComments: string;
+  badges: string;
+} & RestaurantType;
+
+let tempRestaurants: RestaurantType[] = [];
+let tempRestaurantsWithReview: RestaurantWithReviewType[] = [];
 
 // reducer
 const reducer = (action: ActionType) => {
@@ -94,13 +134,12 @@ const reducer = (action: ActionType) => {
       );
       return tempSearchResult;
     case 'DISPLAY_RESTAURANT': // display by cuisine type
-      let tempRestaurants: RestaurantType[] = [];
       tempRestaurants = restaurants.filter(
         (r) => r.cuisine === action.payload.cuisine,
       );
       return tempRestaurants;
     case 'RANDOM_PICK':
-      let qualifiedRes: RestaurantType[];
+      let qualifiedRes: RestaurantType[] = [];
       if (action.payload.priceRange) {
         let budget: number = action.payload.priceRange.length;
         qualifiedRes = restaurants.filter((r) => r.priceRange.length <= budget);
@@ -111,9 +150,22 @@ const reducer = (action: ActionType) => {
       } else {
         qualifiedRes = restaurants;
       }
+      return qualifiedRes.length > 0
+        ? qualifiedRes[Math.floor(Math.random() * qualifiedRes.length)]
+        : qualifiedRes;
 
-      return qualifiedRes[Math.floor(Math.random() * qualifiedRes.length)];
-      break;
+    case 'DISPLAY_REVIEW':
+      restaurantsWithReview.forEach((r) => {
+        if (r.starRating >= action.payload.starRatingNumber) {
+          tempRestaurantsWithReview = [...tempRestaurantsWithReview, r];
+        }
+      });
+      return tempRestaurantsWithReview.length > 0
+        ? tempRestaurantsWithReview
+        : [];
+    case 'ADD_REVIEW':
+      restaurantsWithReview.push(action.payload);
+      return restaurantsWithReview;
     default:
       throw new Error('Invalid action type');
   }
@@ -210,3 +262,28 @@ console.log(
 // Review comments
 // Compliments/complaint badges
 // Display all restaurants above a certain star rating
+console.log(
+  'after adding review',
+  reducer({
+    type: 'ADD_REVIEW',
+    payload: {
+      name: 'Seoul Garden',
+      address: 'Mall',
+      cuisine: 'Steamboat',
+      priceRange: '$$$',
+      starRating: 2,
+      reviewComments: 'Taste OK',
+      badges: 'Complaint',
+    },
+  }),
+);
+
+console.log(
+  'display restaurants with review:',
+  reducer({
+    type: 'DISPLAY_REVIEW',
+    payload: {
+      starRatingNumber: 3,
+    },
+  }),
+);
