@@ -201,6 +201,8 @@ const reducer = (action: ActionType) => {
   }
 };
 
+console.log('\noriginal data:', restaurants);
+
 console.log(
   '\nadd restaurant:',
   reducer({
@@ -284,6 +286,17 @@ console.log(
 );
 
 console.log(
+  '\nRandom Pick:',
+  reducer({
+    type: 'RANDOM_PICK',
+    payload: {
+      priceRange: '$$',
+      cuisine: 'Fast Food',
+    },
+  }),
+);
+
+console.log(
   '\nafter adding review',
   reducer({
     type: 'ADD_REVIEW',
@@ -318,3 +331,5 @@ console.log(
     },
   }),
 );
+
+//delete review
